@@ -16,7 +16,6 @@ services:
       SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: 'true'
     volumes:
       - "extensions:/opt/sonarqube/extensions"
-      - "plugins:/opt/sonarqube/extensions/plugins"
       - "logs:/opt/sonarqube/logs"
       - "data:/opt/sonarqube/data"
 
