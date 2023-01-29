@@ -1,11 +1,11 @@
 # ecoCodeGitpod : A Kub DevBox for ecoCode contribution
 
-* DevBox with VisualStudio, Sonarqube 9.x and PostgreSQL 12 install on it,
-* To save you wasting time installing everything you need to contribute to this project,
+* DevBox with VisualStudio, Sonarqube Community 9.8 and PostgreSQL 12 install on it,
+* To save you wasting time installing everything you need to contribute to this project on your computer,
 * How to:
-  
   * Create a Gitpod account on [this link](https://gitpod.io),
   * Make a fork of the ecoCodeGitpod project in your Github,
+  * Modify the link of the Gitpod icon with your repository, in the README.md file,
   * Click on the Gitpod icon of this README.md file and follow the instructions.
 
 ## This DevBox uses
