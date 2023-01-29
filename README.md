@@ -4,9 +4,9 @@
 * To save you wasting time installing everything you need to contribute to this project,
 * How to:
   
-  1- Create a Gitpod account on [this link](https://gitpod.io),
-  2- Make a fork of the ecoCodeGitpod project in your Github,
-  3- Click on the Gitpod icon of this README.md file and follow the instructions.
+  * Create a Gitpod account on [this link](https://gitpod.io),
+  * Make a fork of the ecoCodeGitpod project in your Github,
+  * Click on the Gitpod icon of this README.md file and follow the instructions.
 
 ## This DevBox uses
 
