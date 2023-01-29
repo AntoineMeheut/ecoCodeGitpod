@@ -15,4 +15,8 @@ tasks:
 vscode:
   extensions:
     - SonarSource.sonarlint-vscode
-    - adisreyaj.sonarqube-status
+    - ms-python.python
+    - eamodio.gitlens
+    - redhat.java
+    - wesleyegberto.vscode-java-tests
+    - magicstack.MagicPython
