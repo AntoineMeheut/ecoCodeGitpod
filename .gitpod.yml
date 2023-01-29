@@ -20,3 +20,4 @@ vscode:
     - redhat.java
     - wesleyegberto.vscode-java-tests
     - magicstack.MagicPython
+    - ms-azuretools.vscode-docker
