@@ -8,9 +8,6 @@ ports:
   # Sonarqube port
   - port: 9000
     onOpen: open-preview
-  # PostgreSQL server
-  - port: 5432
-    onOpen: ignore
 
 vscode:
   extensions:
