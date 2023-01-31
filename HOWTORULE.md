@@ -1,11 +1,11 @@
-# Comment développer des règles pour Sonarqube
-Vous utilisez SonarQube et son Java Analyzer pour analyser vos projets, mais il n'existe pas de règles vous permettant de cibler certains besoins spécifiques de votre entreprise ? Ensuite, votre choix logique peut être d'implémenter votre propre ensemble de règles Java personnalisées.
+# Comment contribuer au projet ecoCode
+Ce fichier essaye de vous donner rapidement les bases, les règles et des explications sur ce qu'il faut et comment faire, pour contribuer au projet ecoCode.
 
-Ce document est une introduction à l'écriture de règles personnalisées pour SonarQube Java Analyzer. Il couvrira tous les principaux concepts d'analyse statique nécessaires pour comprendre et développer des règles efficaces, en s'appuyant sur l'API fournie par SonarSource Analyzer for Java.
+Nous allons donc voir, ce qu'il faut connaître, sur l'écriture de règles personnalisées pour SonarQube Java Analyzer. Ce guide essaye de vous montrer, par l'exemple comment faire et vous explique les principaux concepts d'analyse statique nécessaires pour comprendre et développer des règles efficaces, en s'appuyant sur l'API fournie par SonarSource Analyzer for Java.
 
-## Contenu
+## Sommaire
 
-* [Mise en route](#getting-started)
+* [Quelques explications globales](#quelques-explications-globales)
    * [En regardant le pompon](#looking-at-the-pom)
 * [Écrire une règle](#écrire-une-règle)
    * [Trois fichiers pour forger une règle](#three-files-to-forge-a-rule)
@@ -26,76 +26,26 @@ Ce document est une introduction à l'écriture de règles personnalisées pour 
    * [Comment tester la version source dans une règle](#how-to-test-the-source-version-in-a-rule)
 * [Références](#références)
 
-## Commencer
+## Quelques explications globales
 
-Les règles que vous allez développer seront livrées à l'aide d'un plug-in personnalisé dédié, s'appuyant sur l'API **SonarSource Analyzer for Java**. Afin de commencer à travailler efficacement, nous fournissons un modèle de projet maven, que vous remplirez tout en suivant ce tutoriel.
+Les règles que vous allez développer seront intégrées dans un plug-in personnalisé dédié au projet ecoCode, en s'appuyant sur l'API **SonarSource Analyzer for Java**. Ce plug-in auquel vous allez contribuer, sera alors disponible sur [ce Github](https://github.com/green-code-initiative) et vous pourrez l'utiliser pour l'installer sur votre instance Sonarqube et ainsi analyser votre code et l'améliorer en appliquant les recommandations issues de l'analyse.
 
-Récupérez le projet de modèle en clonant ce référentiel (https://github.com/SonarSource/sonar-java) puis en important dans votre IDE le sous-module [java-custom-rules-examples](https://github.com /SonarSource/sonar-java/tree/master/docs/java-custom-rules-example).
-Ce projet contient déjà des exemples de règles personnalisées. Notre but sera d'ajouter une règle supplémentaire !
+Le projet Green code initiative contient 4 plug-ins :
+* Plug-in Java, pour analyser du code Java sur [ce lien](https://github.com/green-code-initiative/ecoCode/tree/main/java-plugin),
+* Plug-in PHP, pour analyser du code PHP sur [ce lien](https://github.com/green-code-initiative/ecoCode/tree/main/php-plugin),
+* Plug-in Python, pour analyser du code Python sur [ce lien](https://github.com/green-code-initiative/ecoCode/tree/main/python-plugin),
+* Plug-in Androide, pour analyser du code pour mobiles Andoide sur [ce lien](https://github.com/green-code-initiative/ecoCode-mobile/tree/main/android-plugin).
 
-### En regardant le POM
+Récupérez le projet de plug-in sur lequel vous souhaitez contribuer en le clonant. Notez bien que les plug-in sont tous écrits en Java, car Sonarqube est écrit en Java. Si vous ne connaissez pas ce langage de développement, vous pouvez toujours contribuer à identifier des règles pour les différents plug-in. Car votre connaissance de Python, PHP ou du développement sur Androide sera utile pour identifier les façon de coder qui consomment trop de ressources.
 
-Un plugin personnalisé est un projet Maven, et avant de plonger dans le code, il est important de noter quelques lignes pertinentes liées à la configuration de votre plugin personnalisé qui sera bientôt publié. La racine d'un projet Maven est un fichier nommé `pom.xml`.
+## Quels sont les fichiers a créer pour écrire une règle
 
-Dans notre cas, nous en avons 3 :
-* `pom.xml` : utilise une version instantanée de l'analyseur Java
-* `pom_SQ_8_9_LTS.xml` : fichier `pom` autonome, configuré avec des dépendances correspondant aux exigences SonarQube `8.9 LTS`
+Première piste, vous trouverez dans les plug-in des règles déjà écrites, vous pouvez donc vous inspirer du travail fait par les précédents contributeurs pour gagner du temps.
 
-Ces 3 `pom`s correspondent à différents cas d'utilisation, selon l'instance de SonarQube que vous ciblerez avec votre plugin de règles personnalisées. Dans ce didacticiel, ** nous n'utiliserons que le fichier nommé `pom_SQ_8_9_LTS.xml` **, car il est complètement indépendant de la version de Java Analyzer, est autonome et ciblera la dernière version de SonarQube.
-
-Commençons par créer le modèle de plugin personnalisé en utilisant la commande suivante :
-
-```
-mvn clean install -f pom_SQ_8_9_LTS.xml
-```
-
-Notez que vous pouvez également décider de **supprimer** le fichier pom.xml d'origine (**NON RECOMMANDÉ**), puis de renommer `pom_SQ_8_9_LTS.xml` en `pom.xml`. Vous pourrez alors utiliser la commande très simple :
-
-```
-mvn clean install
-```
-
-En regardant à l'intérieur du `pom`, vous verrez que les deux versions de SonarQube et de Java Analyzer sont codées en dur. En effet, les analyseurs de SonarSource sont directement intégrés dans les différentes versions de SonarQube et sont livrés ensemble. Par exemple, SonarQube `7.9` (ancien LTS) est livré avec la version `6.3.2.22818` de Java Analyzer, tandis que SonarQube `8.9` (LTS) est livré avec une version beaucoup plus récente `6.15.1.26025` de Java Analyzer. Analyseur. **Ces versions ne peuvent pas être modifiées**.
-
-```xml
-<properties>
-  <sonarqube.version>8.9.0.43852</sonarqube.version>
-  <sonarjava.version>6.15.1.26025</sonarjava.version>
-  <!-- [...] -->
-</properties>
-```
-
-D'autres balises telles que `<groupId>`, `<artifactId>`, `<version>`, `<name>` et `<description>` peuvent être librement modifiées.
-
-```xml
-  <groupId>org.sonar.samples</groupId>
-  <artifactId>java-custom-rules-example</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <name>SonarQube Java :: Documentation :: Custom Rules Example</name>
-  <description>Java Custom Rules Example for SonarQube</description>
-```
-
-Dans l'extrait de code ci-dessous, il est important de noter que le **point d'entrée du plugin** est fourni en tant que `<pluginClass>` dans la configuration du plugin sonar-packaging-maven, en utilisant le nom complet du classe Java `MyJavaRulesPlugin`.
-Si vous refactorisez votre code, renommez ou déplacez la classe étendant `org.sonar.api.SonarPlugin`, vous devrez modifier cette configuration.
-C'est aussi la propriété `<sonarQubeMinVersion>` qui garantit la compatibilité avec l'instance SonarQube que vous ciblez.
-
-```xml
-<plugin>
-  <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
-  <artifactId>sonar-packaging-maven-plugin</artifactId>
-  <version>1.20.0.405</version>
-  <extensions>true</extensions>
-  <configuration>
-    <pluginKey>java-custom</pluginKey>
-    <pluginName>Java Custom Rules</pluginName>
-    <pluginClass>org.sonar.samples.java.MyJavaRulesPlugin</pluginClass>
-    <sonarLintSupported>true</sonarLintSupported>
-    <sonarQubeMinVersion>${sonarqube.version}</sonarQubeMinVersion>
-    <requirePlugins>java:${sonarjava.version}</requirePlugins>
-  </configuration>
-</plugin>
-```
-
+Globalement, pour écrire une règle, vous aurez besoin de ces fichiers :
+* xxx :
+* xxx :
+* xxx : 
 ## Écrire une règle
 
 Dans cette section, nous allons écrire une règle personnalisée à partir de zéro. Pour ce faire, nous utiliserons une approche [Test Driven Development](https://en.wikipedia.org/wiki/Test-driven_development) (TDD), reposant d'abord sur l'écriture de cas de test, puis sur la mise en œuvre d'une solution.
