@@ -227,8 +227,14 @@ Pour connaitre les recommandations de Sonar sur ce qu’il faut placer dans ce f
     "defaultSeverity": "Minor"
   }
 ```
+Avec cet exemple, nous avons un "titre" concis mais descriptif pour notre règle, le "type" de problème qu'il met en évidence, son "état" (prêt ou obsolète), les "balises" qui devraient le faire apparaître dans une recherche et le « gravité » du problème.
 
 ### Création du fichier de description des consignes aux développeurs
+Nous devons d'abord remplir le fichier HTML avec des informations qui aideront les développeurs à résoudre le problème.
+
+Ci-dessous nous avons une balise Noncompliant et un exemple de code correcte à écrire pour gérer correctement ses getters et setters.
+
+Ces informations seront remontés au développeur, dans l'interface Sonar, si votre règle a identifiée une non conformité du code. 
 
 ```html
 <p>Avoid Getters and Setters in class, It increase unless RAM memory usage.</p>
@@ -270,3 +276,6 @@ client.age = 26 # Modifier l'attribut age
 ```
 
 # Comment tester votre règle
+À ce stade, nous avons terminé la mise en œuvre d'une première règle personnalisée et l'avons enregistrée dans le plug-in personnalisé. La dernière étape restante est de le tester directement avec la plateforme SonarQube et d'essayer d'analyser un projet !
+
+Le projet ecoCode propose [ce guide](https://github.com/green-code-initiative/ecoCode-common/blob/main/doc/INSTALL.md) pour tester dans une version locale de Sonarqube le plugin développé, en utilisant docker.
